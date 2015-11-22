@@ -1,0 +1,24 @@
+---
+- name: create linode user group
+  group:
+    name: "{{ linode_managed_username }}"
+    state: present
+
+- name: create linode user
+  user:
+    name: "{{ linode_managed_username }}"
+    comment: Linode Managed Services
+    group: "{{ linode_managed_username }}"
+
+- name: add ssh key for linode user
+  authorized_key:
+    user: "{{ linode_managed_username }}"
+    key: "{{ linode_managed_ssh_pub_key }}"
+
+- name: add passwordless sudo for linode user
+  copy:
+    dest: /etc/sudoers.d/linode
+    content: "{{ linode_managed_username }} ALL=(ALL) NOPASSWD: ALL"
+    mode: 0440
+    owner: root
+    group: root
